@@ -1,7 +1,5 @@
 <p align="right"><a href="https://buymeacoffee.com/raw07" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" height="40" alt="Buy Me A Coffee"></a></p>
 
-> **Main repository:** [codeberg.org/RaW07/faikout-openhab](https://codeberg.org/RaW07/faikout-openhab) · This GitHub repo is a mirror.
-
 # Faikout – openHAB Integration
 
 [English](#english) | [Deutsch](#deutsch)
