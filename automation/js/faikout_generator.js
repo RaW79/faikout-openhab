@@ -76,7 +76,8 @@ const CFG = {
 //   ip:           '192.168.x.x'
 //   host:         'AABBCCDDEEFF'          ← fetched from device
 //   statusTopic:  'state/AABBCCDDEEFF/status'
-//   commandTopic: 'setting/AABBCCDDEEFF'
+//   controlTopic: 'command/AABBCCDDEEFF'    ← runtime control (power/swing via JSON, others direct)
+//   commandTopic: 'setting/AABBCCDDEEFF'    ← persistent config (autot, autor, heatback, ...)
 //   deviceUID:    'mqtt:topic:faikout-broker:klima-wohnzimmer'
 // }
 
@@ -85,30 +86,36 @@ const CFG = {
 // All known Faikout fields. Only channels whose key appears in the
 // device feature scan (or the whitelist) will be created.
 //
-//  id          label                        type      key           rw
+//  id          label                        type      key           rw     cmd
+//
+//  cmd values (for rw channels):
+//   'control'  → command/<ID>/control  with JSON payload {"key": true/false}
+//   'direct'   → command/<ID>/<key>    with raw value (Switch: 1/0, others: as-is)
+//   'setting'  → setting/<ID>/<key>    with raw value (persistent Faikout settings)
 // ================================================================
 const CHANNELS = [
-  // ---- Control ----
-  { id: 'power',       label: 'Power',                   type: 'Switch', key: 'power',       rw: true  },
-  { id: 'mode',        label: 'Mode',                    type: 'String', key: 'mode',        rw: true  },
-  { id: 'fan',         label: 'Fan Speed',               type: 'String', key: 'fan',         rw: true  },
-  { id: 'temp',        label: 'Target Temp',             type: 'Number', key: 'temp',        rw: true  },
-  { id: 'swingv',      label: 'Swing Vertical',          type: 'Switch', key: 'swingv',      rw: true  },
-  { id: 'swingh',      label: 'Swing Horizontal',        type: 'Switch', key: 'swingh',      rw: true  },
-  { id: 'powerful',    label: 'Powerful',                type: 'Switch', key: 'powerful',    rw: true  },
-  { id: 'econo',       label: 'Econo',                   type: 'Switch', key: 'econo',       rw: true  },
-  { id: 'comfort',     label: 'Comfort Airflow',         type: 'Switch', key: 'comfort',     rw: true  },
-  { id: 'streamer',    label: 'Streamer',                type: 'Switch', key: 'streamer',    rw: true  },
-  { id: 'led',         label: 'LED',                     type: 'Switch', key: 'led',         rw: true  },
-  { id: 'quiet',       label: 'Quiet Mode',              type: 'Switch', key: 'quiet',       rw: true  },
-  { id: 'demand',      label: 'Demand Control',          type: 'Number', key: 'demand',      rw: true  },
-  { id: 'louvre',      label: 'Louvre',                  type: 'String', key: 'louvre',      rw: true  },
-  { id: 'humidify',    label: 'Humidifier',              type: 'String', key: 'humidify',    rw: true  },
+  // ---- Control (command/<ID>/control with JSON) ----
+  { id: 'power',       label: 'Power',                   type: 'Switch', key: 'power',       rw: true,  cmd: 'control' },
+  { id: 'swingv',      label: 'Swing Vertical',          type: 'Switch', key: 'swingv',      rw: true,  cmd: 'control' },
+  { id: 'swingh',      label: 'Swing Horizontal',        type: 'Switch', key: 'swingh',      rw: true,  cmd: 'control' },
+  // ---- Control (command/<ID>/<key> direct) ----
+  { id: 'mode',        label: 'Mode',                    type: 'String', key: 'mode',        rw: true,  cmd: 'direct'  },
+  { id: 'fan',         label: 'Fan Speed',               type: 'String', key: 'fan',         rw: true,  cmd: 'direct'  },
+  { id: 'temp',        label: 'Target Temp (Daikin)',    type: 'Number', key: 'temp',        rw: false },
+  { id: 'powerful',    label: 'Powerful',                type: 'Switch', key: 'powerful',    rw: true,  cmd: 'direct'  },
+  { id: 'econo',       label: 'Econo',                   type: 'Switch', key: 'econo',       rw: true,  cmd: 'direct'  },
+  { id: 'comfort',     label: 'Comfort Airflow',         type: 'Switch', key: 'comfort',     rw: true,  cmd: 'direct'  },
+  { id: 'streamer',    label: 'Streamer',                type: 'Switch', key: 'streamer',    rw: true,  cmd: 'direct'  },
+  { id: 'led',         label: 'LED',                     type: 'Switch', key: 'led',         rw: true,  cmd: 'direct'  },
+  { id: 'quiet',       label: 'Quiet Mode',              type: 'Switch', key: 'quiet',       rw: true,  cmd: 'direct'  },
+  { id: 'demand',      label: 'Demand Control',          type: 'Number', key: 'demand',      rw: true,  cmd: 'direct'  },
+  { id: 'louvre',      label: 'Louvre',                  type: 'String', key: 'louvre',      rw: true,  cmd: 'direct'  },
+  { id: 'humidify',    label: 'Humidifier',              type: 'String', key: 'humidify',    rw: true,  cmd: 'direct'  },
   // ---- Auto / timer ----
-  { id: 'autoe',       label: 'Auto Mode Enable',        type: 'Switch', key: 'autoe',       rw: true  },
-  { id: 'autop',       label: 'Auto Power On/Off',       type: 'Switch', key: 'autop',       rw: true  },
-  { id: 'autot',       label: 'Auto Target Temp',        type: 'Number', key: 'autot',       rw: true  },
-  { id: 'autor',       label: 'Auto Hysteresis',         type: 'Number', key: 'autor',       rw: true  },
+  { id: 'autoe',       label: 'Auto Mode Enable',        type: 'Switch', key: 'autoe',       rw: true,  cmd: 'direct'  },
+  { id: 'autop',       label: 'Auto Power On/Off',       type: 'Switch', key: 'autop',       rw: true,  cmd: 'direct'  },
+  { id: 'autot',       label: 'Auto Target Temp',        type: 'Number', key: 'autot',       rw: true,  cmd: 'setting' },
+  { id: 'autor',       label: 'Auto Hysteresis',         type: 'Number', key: 'autor',       rw: true,  cmd: 'setting' },
   // ---- Temperatures (read-only) ----
   { id: 'home',        label: 'Return Air Temp',         type: 'Number', key: 'home',        rw: false },
   { id: 'env',         label: 'Room Temp (sensor)',      type: 'Number', key: 'env',         rw: false },
@@ -319,10 +326,21 @@ function channelConfig(dev, ch) {
     transformationPattern: 'JSONPATH:$.' + ch.key,
   };
   if (ch.rw) {
-    cfg.commandTopic = dev.commandTopic + '/' + ch.key;
-    if (ch.type === 'Switch') {
+    if (ch.cmd === 'control') {
+      // power, swingv, swingh: state-only channel (no commandTopic)
+      // A separate _ctrl channel handles the command (see ensureDeviceThing)
       cfg.on  = 'true';
       cfg.off = 'false';
+    } else if (ch.cmd === 'setting') {
+      // autot, autor: setting/<ID>/<key>
+      cfg.commandTopic = dev.commandTopic + '/' + ch.key;
+    } else {
+      // direct: command/<ID>/<key> with raw value (Switch: 1/0)
+      cfg.commandTopic = dev.controlTopic + '/' + ch.key;
+      if (ch.type === 'Switch') {
+        cfg.on  = '1';
+        cfg.off = '0';
+      }
     }
   }
   return cfg;
@@ -339,6 +357,26 @@ function ensureDeviceThing(dev, activeChannels) {
       properties:     {},
       defaultTags:    [],
     };
+  });
+
+  // Extra command-only channels for 'control' type (power, swingv, swingh)
+  // Avoids the on/off dual-purpose conflict: state channel reads, ctrl channel writes
+  activeChannels.forEach(function(ch) {
+    if (ch.rw && ch.cmd === 'control') {
+      channelList.push({
+        uid:            dev.deviceUID + ':' + ch.id + '_ctrl',
+        id:             ch.id + '_ctrl',
+        channelTypeUID: 'mqtt:switch',
+        label:          ch.label + ' Command',
+        configuration:  {
+          commandTopic: dev.controlTopic + '/control',
+          on:           JSON.stringify({[ch.key]: true}),
+          off:          JSON.stringify({[ch.key]: false}),
+        },
+        properties:     {},
+        defaultTags:    [],
+      });
+    }
   });
 
   const body = {
@@ -415,9 +453,10 @@ function generateForDevice(dev) {
     console.error('[faikout-gen] Cannot read Device ID from ' + dev.ip + ' – skipping.');
     return;
   }
-  dev.host         = host;
-  dev.statusTopic  = 'state/'   + host + '/status';
-  dev.commandTopic = 'setting/' + host;
+  dev.host          = host;
+  dev.statusTopic   = 'state/'   + host + '/status';
+  dev.controlTopic  = 'command/' + host;
+  dev.commandTopic  = 'setting/' + host;
   dev.deviceUID    = 'mqtt:topic:faikout-broker:' + dev.name.toLowerCase().replace(/_/g, '-');
   console.log('[faikout-gen] Device ID: ' + host);
 
@@ -446,8 +485,13 @@ function generateForDevice(dev) {
 
   // 6. Items + channel links
   for (var i = 0; i < activeChannels.length; i++) {
-    const name = ensureItem(dev, activeChannels[i]);
-    ensureLink(name, dev.deviceUID + ':' + activeChannels[i].id);
+    const ch = activeChannels[i];
+    const name = ensureItem(dev, ch);
+    ensureLink(name, dev.deviceUID + ':' + ch.id);
+    // control-type channels: also link to the _ctrl command channel
+    if (ch.rw && ch.cmd === 'control') {
+      ensureLink(name, dev.deviceUID + ':' + ch.id + '_ctrl');
+    }
   }
 
   console.log('[faikout-gen] Done: ' + dev.name + ' – ' + activeChannels.length + ' channel(s) created/updated.');
