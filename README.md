@@ -81,7 +81,10 @@ Set `createConfigItems: true` to additionally create write-only Items for Faikou
 | Direction | Topic |
 |-----------|-------|
 | Status (read) | `state/<DeviceID>/status` |
-| Command (write) | `setting/<DeviceID>/<key>` |
+| Control: power, swingv, swingh | `command/<DeviceID>/control` (JSON payload) |
+| Control: mode, fan, econo, etc. | `command/<DeviceID>/<key>` |
+| Config: autot, autor | `setting/<DeviceID>/<key>` |
+| Config params: heatback, tcontrol, etc. | `setting/<DeviceID>/<key>` |
 
 ---
 
@@ -160,7 +163,10 @@ Mit `createConfigItems: true` werden zusätzlich nur-schreibende Items für Faik
 | Richtung | Topic |
 |----------|-------|
 | Status (lesen) | `state/<GeräteID>/status` |
-| Befehl (schreiben) | `setting/<GeräteID>/<key>` |
+| Steuerung: power, swingv, swingh | `command/<GeräteID>/control` (JSON-Payload) |
+| Steuerung: mode, fan, econo, usw. | `command/<GeräteID>/<key>` |
+| Einstellung: autot, autor | `setting/<GeräteID>/<key>` |
+| Konfiguration: heatback, tcontrol, usw. | `setting/<GeräteID>/<key>` |
 
 ---
 
