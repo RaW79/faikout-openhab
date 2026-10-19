@@ -363,6 +363,19 @@ function ensureDeviceThing(dev, activeChannels) {
 // ================================================================
 // ITEMS + CHANNEL LINKS
 // ================================================================
+function ensureGroup(dev) {
+  const body = {
+    name:       dev.name,
+    type:       'Group',
+    label:      dev.name.replace(/_/g, ' ') + ' (' + dev.host + ')',
+    category:   '',
+    tags:       [],
+    groupNames: [],
+  };
+  console.log('[faikout-gen] Ensuring Group: ' + dev.name);
+  ohPut('/items/' + dev.name, body);
+}
+
 function itemName(dev, ch) {
   return dev.name + '_' + ch.id.charAt(0).toUpperCase() + ch.id.slice(1);
 }
@@ -370,11 +383,12 @@ function itemName(dev, ch) {
 function ensureItem(dev, ch) {
   const name = itemName(dev, ch);
   const body = {
-    name:     name,
-    type:     ch.type,
-    label:    dev.name + ' ' + ch.label,
-    category: ch.type === 'Number' ? 'Temperature' : '',
-    tags:     [],
+    name:       name,
+    type:       ch.type,
+    label:      ch.label,
+    category:   ch.type === 'Number' ? 'Temperature' : '',
+    tags:       [],
+    groupNames: [dev.name],
   };
   console.log('[faikout-gen] Ensuring Item: ' + name);
   ohPut('/items/' + name, body);
@@ -427,7 +441,10 @@ function generateForDevice(dev) {
   // 4. Device Thing
   ensureDeviceThing(dev, activeChannels);
 
-  // 5. Items + channel links
+  // 5. Group Item (label shows Device ID)
+  ensureGroup(dev);
+
+  // 6. Items + channel links
   for (var i = 0; i < activeChannels.length; i++) {
     const name = ensureItem(dev, activeChannels[i]);
     ensureLink(name, dev.deviceUID + ':' + activeChannels[i].id);

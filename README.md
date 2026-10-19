@@ -101,7 +101,7 @@ Das Script [`faikout_generator.js`](automation/js/faikout_generator.js) wird dir
 - Nur aktive Features werden angelegt (deaktivierte Features wie Streamer, LED, Befeuchter etc. werden übersprungen)
 - Mehrere Faikout-Geräte werden in einem einzigen Script unterstützt
 - Erneutes Ausführen ist sicher – bestehende Things und Items werden aktualisiert, nicht doppelt angelegt
-- Optional werden schreibgeschützte Items für Faikout-Konfigurationsparameter angelegt (heatback, tcontrol usw.)
+- Optional werden nur-schreibende Items für Faikout-Konfigurationsparameter angelegt (heatback, tcontrol usw.)
 
 Nach dem Script-Lauf übernimmt das openHAB MQTT-Binding dauerhaft die gesamte Kommunikation.
 
@@ -151,7 +151,7 @@ Für jedes weitere Faikout: Einfach einen weiteren Eintrag in `DEVICES` hinzufü
 
 ### Optional: Faikout-Konfigurationsparameter
 
-Mit `createConfigItems: true` werden zusätzlich schreibgeschützte Items für Faikout-Einstellungen wie `heatback`, `coolback`, `tcontrol` usw. angelegt (benannt z.B. `Klima_Wohnzimmer_Cfg_Heatback`).
+Mit `createConfigItems: true` werden zusätzlich nur-schreibende Items für Faikout-Einstellungen wie `heatback`, `coolback`, `tcontrol` usw. angelegt (benannt z.B. `Klima_Wohnzimmer_Cfg_Heatback`).
 
 > **Hinweis:** Diese Items sind **nur schreibend**. Der Faikout sendet Konfigurationsparameter nicht im MQTT-Status, daher kann openHAB den aktuellen Wert nicht zurücklesen. Die Faikout-Weboberfläche bleibt die maßgebliche Quelle für aktuelle Einstellungen.
 
