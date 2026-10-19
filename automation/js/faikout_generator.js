@@ -1,24 +1,28 @@
 'use strict';
 
 // ================================================================
-// faikout_generator.js
-// openHAB GraalVM JS – Faikout MQTT Integration Generator
+// Faikout MQTT Integration Generator
+// openHAB GraalVM JS – UI Rule Script
 //
-// Place this file in: /etc/openhab/automation/js/
+// HOW TO USE:
+//   1. Settings → Automation → Rules → Add Rule
+//   2. Name: "Faikout Integration Generator"
+//   3. Trigger: System Start Level → Level 100
+//   4. Action: Run Script → paste this script
+//   5. Adjust the CONFIGURATION block below
+//   6. Save – runs automatically on every openHAB startup
+//      or click Run Now to execute immediately
 //
-// Runs on system startup. Queries the Faikout HTTP pages to detect
-// which features are active (same logic as the ioBroker generator),
-// then creates:
-//   - A MQTT Broker Thing
-//   - A Generic MQTT Thing for the Faikout with per-feature channels
+// Queries each Faikout via HTTP, auto-detects the Device ID and
+// active features, then creates:
+//   - A MQTT Broker Thing (shared for all devices)
+//   - A Generic MQTT Thing per device with per-feature channels
 //   - Items linked to those channels
 //
-// All Things and Items are created via the openHAB REST API and
-// stored in the internal JSON database (not in .things/.items files).
-// Re-running the script is safe – existing entries are updated.
+// Re-running is safe – existing Things and Items are updated.
 // ================================================================
 
-const { rules, triggers, actions } = require('openhab');
+const { actions } = require('openhab');
 
 // ================================================================
 // CONFIGURATION – adjust to your setup
@@ -447,11 +451,6 @@ function generate() {
 }
 
 // ================================================================
-// RULE – runs once when openHAB is fully started
+// RUN
 // ================================================================
-rules.JSRule({
-  name:        'Faikout Integration Generator',
-  description: 'Generates MQTT Things and Items for Faikout on startup',
-  triggers:    [triggers.SystemStartlevelTrigger(100)],
-  execute:     generate,
-});
+generate();
