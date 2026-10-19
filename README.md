@@ -16,7 +16,7 @@ The Faikout is an ESP32 board connected to the S21 service port of a Daikin indo
 
 ### What does this script do?
 
-The script [`faikout_generator.js`](automation/js/faikout_generator.js) is placed in the openHAB automation folder and runs once automatically at every openHAB startup. It connects to each Faikout via HTTP, automatically detects the device ID and which features are active, and creates all required MQTT Things, channels, and Items.
+The script [`faikout_generator.js`](automation/js/faikout_generator.js) is created as a rule directly in the openHAB web UI and runs once automatically at every openHAB startup. It connects to each Faikout via HTTP, automatically detects the device ID and which features are active, and creates all required MQTT Things, channels, and Items.
 
 - Device ID is fetched automatically – only the IP address needs to be configured
 - Only active features are created (disabled features like streamer, LED, humidifier etc. are skipped)
@@ -33,12 +33,17 @@ After the script has run, openHAB's MQTT Binding handles all further communicati
   - **JavaScript Scripting** (`jsscripting`)
   - **JSONPath Transformation** (`jsonpath`)
 - Faikout reachable via IP within the same network as the openHAB server
-- An openHAB API token (Admin → Settings → API Tokens)
+- An openHAB API token (Settings → API Tokens → Add Token)
 
 ### Setup
 
-1. Copy [`faikout_generator.js`](automation/js/faikout_generator.js) to `/etc/openhab/automation/js/`
-2. Adjust the configuration block at the top of the script:
+1. Open the openHAB web UI and go to **Settings → Automation → Rules**
+2. Click **Add Rule** and fill in:
+   - Name: `Faikout Integration Generator`
+   - Trigger: **System Start Level** → Level `100`
+3. Under **Actions**, click **Add Action** → **Run Script** → select **ECMAScript 2021**
+4. Paste the full content of [`faikout_generator.js`](automation/js/faikout_generator.js) into the script editor
+5. Adjust the configuration block at the top:
 
 ```js
 const DEVICES = [
@@ -59,11 +64,11 @@ const OPENHAB = {
 };
 ```
 
-3. Restart openHAB once – Things and Items appear immediately.
+6. **Save** the rule, then click **Run Now** to execute immediately
 
 The device ID is fetched automatically. Items are named after the device, e.g. `Klima_Wohnzimmer_Power`, `Klima_Wohnzimmer_Temp`, `Klima_Wohnzimmer_Mode` etc.
 
-For each additional Faikout: add another entry to `DEVICES`.
+For each additional Faikout: add another entry to `DEVICES` and run again.
 
 ### Optional: Faikout configuration parameters
 
@@ -90,7 +95,7 @@ Der Faikout ist ein ESP32-Board, das über den S21-Serviceanschluss eines Daikin
 
 ### Was macht dieses Script?
 
-Das Script [`faikout_generator.js`](automation/js/faikout_generator.js) wird im openHAB-Automationsordner abgelegt und läuft automatisch einmalig bei jedem openHAB-Start. Es verbindet sich per HTTP mit jedem Faikout, erkennt automatisch die Geräte-ID und aktive Features, und legt alle benötigten MQTT-Things, Channels und Items an.
+Das Script [`faikout_generator.js`](automation/js/faikout_generator.js) wird direkt als Rule in der openHAB-Weboberfläche angelegt und läuft automatisch einmalig bei jedem openHAB-Start. Es verbindet sich per HTTP mit jedem Faikout, erkennt automatisch die Geräte-ID und aktive Features, und legt alle benötigten MQTT-Things, Channels und Items an.
 
 - Geräte-ID wird automatisch ausgelesen – nur die IP-Adresse muss konfiguriert werden
 - Nur aktive Features werden angelegt (deaktivierte Features wie Streamer, LED, Befeuchter etc. werden übersprungen)
@@ -107,12 +112,17 @@ Nach dem Script-Lauf übernimmt das openHAB MQTT-Binding dauerhaft die gesamte K
   - **JavaScript Scripting** (`jsscripting`)
   - **JSONPath Transformation** (`jsonpath`)
 - Faikout per IP im gleichen Netzwerk wie der openHAB-Server erreichbar
-- Ein openHAB-API-Token (Admin → Einstellungen → API-Tokens)
+- Ein openHAB-API-Token (Einstellungen → API-Tokens → Token hinzufügen)
 
 ### Einrichtung
 
-1. [`faikout_generator.js`](automation/js/faikout_generator.js) nach `/etc/openhab/automation/js/` kopieren
-2. Den Konfigurationsblock am Anfang des Scripts anpassen:
+1. openHAB-Weboberfläche öffnen, **Einstellungen → Automatisierung → Regeln**
+2. **Regel hinzufügen** anklicken und ausfüllen:
+   - Name: `Faikout Integration Generator`
+   - Auslöser: **System-Startlevel** → Level `100`
+3. Unter **Aktionen** auf **Aktion hinzufügen** → **Script ausführen** → **ECMAScript 2021** wählen
+4. Den vollständigen Inhalt von [`faikout_generator.js`](automation/js/faikout_generator.js) in den Script-Editor einfügen
+5. Den Konfigurationsblock am Anfang anpassen:
 
 ```js
 const DEVICES = [
@@ -133,11 +143,11 @@ const OPENHAB = {
 };
 ```
 
-3. openHAB einmal neu starten – Things und Items erscheinen sofort.
+6. Regel **speichern**, dann **Jetzt ausführen** klicken
 
 Die Geräte-ID wird automatisch ausgelesen. Items werden nach dem Gerätenamen benannt, z.B. `Klima_Wohnzimmer_Power`, `Klima_Wohnzimmer_Temp`, `Klima_Wohnzimmer_Mode` usw.
 
-Für jedes weitere Faikout: Einfach einen weiteren Eintrag in `DEVICES` hinzufügen.
+Für jedes weitere Faikout: Einfach einen weiteren Eintrag in `DEVICES` hinzufügen und erneut ausführen.
 
 ### Optional: Faikout-Konfigurationsparameter
 
